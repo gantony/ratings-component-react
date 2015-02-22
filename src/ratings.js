@@ -2,11 +2,20 @@ var Icon = React.createClass({
     getInitialState: function() {
         return {active: false};
     },
+    getIconClass: function(iconType) {
+        var fontAwsomeClasses = {
+            bad: "icon-frown",
+            average: "icon-meh",
+            good: "icon-smile"
+        };
+        return fontAwsomeClasses[iconType];
+    },
     className: function() {
-        var classes = ["icon", this.props.type];
+        var classes = ["icon", "circle-icon", "icon-2x"];
         if (this.state.active) {
             classes.push("active");
         }
+        classes.push(this.getIconClass(this.props.type));
         return classes.join(" ");
     },
     toggle: function(e) {
@@ -45,7 +54,7 @@ var Rating = React.createClass({
     },
     render: function() {
         return <div className="rating">
-            <span className="type">{this.props.type}: </span>{this.getIcons(["red", "green", "blue"])}
+            <span className="type">{this.props.type}: </span>{this.getIcons(["bad", "average", "good"])}
         </div>;
     }
 });
@@ -58,7 +67,8 @@ var Ratings = React.createClass({
     },
     render: function() {
         return <div className="ratings">
-            <div className="headline">How are you today?</div>
+            <div className="heading">How are you?</div>
+            <hr />
             <div>
                 {this.getRatings(["Stress", "Mood", "Energy", "Sleep"])}
             </div>
