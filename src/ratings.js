@@ -11,7 +11,15 @@ var Icon = React.createClass({
     },
     toggle: function(e) {
         e.preventDefault();
-        this.setState({active: !this.state.active});
+        
+        var active = !this.state.active;
+        this.setState({active: active});
+        if (active) {
+            this.props.activeCallBack();
+        }
+    },
+    clear: function() {
+        this.setState({active: false});
     },
     render: function() {
         return <span className={this.className()} onClick={this.toggle}></span>;
@@ -20,16 +28,21 @@ var Icon = React.createClass({
 
 
 var Rating = React.createClass({
-    getIcons: function(colours) {
-        return colours.map(function(colour) { 
-            return <Icon type={colour} />;
-        });
+    getInitialState: function(){
+        return {activeRating: "none"};
     },
-    /*
-        I currently don't have any logic to implement the fact that only
-        one icone can be active at a time. this is potentially better 
-        managed at the model/collection level
-    */
+    iconActivated: function(colour) {
+        for(refKey in this.refs) {
+            if (refKey !== colour) {
+                this.refs[refKey].clear();
+            }
+        }
+    },
+    getIcons: function(colours) {
+        return colours.map(function(colour, i) { 
+            return <Icon type={colour} ref={colour} activeCallBack={this.iconActivated.bind(this, colour)} key={i} />;
+        }, this);
+    },
     render: function() {
         return <div className="rating">
             <span className="type">{this.props.type}: </span>{this.getIcons(["red", "green", "blue"])}
@@ -39,8 +52,8 @@ var Rating = React.createClass({
 
 var Ratings = React.createClass({
     getRatings: function(types) {
-        return types.map(function(type) { 
-            return <Rating type={type} />;
+        return types.map(function(type, i) { 
+            return <Rating type={type} key={i} />;
         });
     },
     render: function() {
