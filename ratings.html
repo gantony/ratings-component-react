@@ -6,8 +6,14 @@
 
     <script src="vendor/react-0.12.2/react.js"></script>
     <script src="vendor/react-0.12.2/JSXTransformer.js"></script>
-    <script type="text/jsx" src="src/ratings.js"></script>
+    
   </head>
   <body>
+  	<script type="text/jsx" src="src/ratings.jsx"></script>
+  	<script>
+  		setTimeout(function() {
+  			React.render(RatingsComponent.create(), document.body);
+  		}, 500);
+  	</script>
   </body>
 </html>
