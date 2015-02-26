@@ -15,6 +15,22 @@ describe("The Ratings component", function() {
 		return React.addons.TestUtils.renderIntoDocument(RatingsComponent.create());
 	}
 
+	function getIcon(parent, childIndex) {
+		return React.addons.TestUtils.scryRenderedDOMComponentsWithClass(parent, "icon")[childIndex];
+	}
+
+	function numActiveIcons(parent) {
+		return React.addons.TestUtils.scryRenderedDOMComponentsWithClass(parent, "active").length;
+	}
+
+	function isActiveIcon(icon) {
+		return numActiveIcons(icon) === 1;
+	}
+
+	function clickOnIcon(icon) {
+		React.addons.TestUtils.Simulate.click(icon.getDOMNode());
+	}
+
 	it("is a React Composite Component", function() {
 		var component = getComponent();
 		expect(React.addons.TestUtils.isCompositeComponent(component)).toBeTruthy();
@@ -28,43 +44,43 @@ describe("The Ratings component", function() {
 
 	it("initially does not have any active icon", function() {
 		var component = getComponent();
-		var activeIcons = React.addons.TestUtils.scryRenderedDOMComponentsWithClass(component, "active");
-    	expect(activeIcons.length).toBe(0);
+		expect(numActiveIcons(component)).toBe(0);
 	});
 
 	it("clicking on an inactive icon makes it active", function() {
 		var component = getComponent();
-		var icon = React.addons.TestUtils.scryRenderedDOMComponentsWithClass(component, "icon")[0];
-		expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (icon, "active").length).toBe(0);
+		var icon = getIcon(component, 0);
+		expect(isActiveIcon(icon)).toBeFalsy();
 
-		React.addons.TestUtils.Simulate.click(icon.getDOMNode());
-    	expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (icon, "active").length).toBe(1);
+		clickOnIcon(icon);
+    	expect(isActiveIcon(icon)).toBeTruthy();
 	});
 
 	it("clicking on an active icon makes it inactive", function() {
 		var component = getComponent();
-		var icon = React.addons.TestUtils.scryRenderedDOMComponentsWithClass(component, "icon")[0];
-		React.addons.TestUtils.Simulate.click(icon.getDOMNode());
-		expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (icon, "active").length).toBe(1);
+		var icon = getIcon(component, 0);
+		clickOnIcon(icon);
+		expect(isActiveIcon(icon)).toBeTruthy();
 
-		React.addons.TestUtils.Simulate.click(icon.getDOMNode());
-    	expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (icon, "active").length).toBe(0);
+		clickOnIcon(icon);
+    	expect(isActiveIcon(icon)).toBeFalsy();
 	});
 
 	it("a rating component can only have one icon active at a time", function() {
 		var component = getComponent();
 		var rating = React.addons.TestUtils.scryRenderedDOMComponentsWithClass(component, "rating")[0];
 		var icons = React.addons.TestUtils.scryRenderedDOMComponentsWithClass(rating, "icon");
+		
 		expect(icons.length).toBe(3);	
-		expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (rating, "active").length).toBe(0);
+		expect(numActiveIcons(rating)).toBe(0);
 
-		React.addons.TestUtils.Simulate.click(icons[0].getDOMNode());
-		expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (rating, "active").length).toBe(1);
+		clickOnIcon(icons[0]);
+		expect(numActiveIcons(rating)).toBe(1);
 
-		React.addons.TestUtils.Simulate.click(icons[1].getDOMNode());
-		expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (rating, "active").length).toBe(1);
+		clickOnIcon(icons[1]);
+		expect(numActiveIcons(rating)).toBe(1);
 
-		expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (icons[0], "active").length).toBe(0);
-		expect(React.addons.TestUtils.scryRenderedDOMComponentsWithClass (icons[1], "active").length).toBe(1);
+		expect(numActiveIcons(icons[0])).toBe(0);
+		expect(numActiveIcons(icons[1])).toBe(1);
 	});
 });
